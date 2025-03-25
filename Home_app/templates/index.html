@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Time Location Tracking</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9V9cKd0wmd6xavCSCFTQwuoXIJyoN5o4"></script>  
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9NwH7KcQ42yFBTG6FVSrG57L39VIFe8I&callback=initMap"></script>
 </head>
 
 
@@ -12,8 +12,7 @@
 
     <h1>Real Time Location Tracking</h1>
 
-    <div id="maps"></div>
-
+    <div id="maps" style="width: 100%; height: 500px; background-color:aqua;"></div>
 
     
 </body>
@@ -27,8 +26,37 @@
 
     function initMap() {
 
-        var initiallocation = {lat: 0, lng: 0};
+        var initiallocation = {lat:19.07, lng: 72.887};
+        map =new google.maps.Map(document.getElementById('maps'),{
+            center: initiallocation,
+            zoom: 15,
+            restrictions: {
+                north: 20,
+                south: 18,
+                west: 71,
+                east: 74
+            },strictBounds: false
+
+        })
+        marker = new google.maps.Marker({
+
+            position : initiallocation,
+            map: map
+        })
+        updateLocation();
         
     }
+
+    function updateLocation(){
+        fetch('/get_location_data').then(res => res.json()).then(data => {
+            console.log(data.latitude,data.longitude)
+            lat = data.latitude;
+            lon = data.longitude;
+            marker.setPosition({lat:lat,lng:lon})
+            map.setCenter({lat:lat,lng:lon})
+        })
+        setTimeout(updateLocation,1000)
+    }
+    window.onload = initMap
 </script>
 </html>
